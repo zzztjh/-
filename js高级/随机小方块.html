@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        .map {
+            width: 800px;
+            height: 600px;
+            background-color: #ccc;
+            margin: 0 auto;
+            position: relative;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="map"></div>
+</body>
+<script>
+    (function (window) {
+        function Random() {
+
+        } 
+        //给Random原型对象一个获取N-M 的随机数的方法  0 600  -   0  800  
+        Random.prototype.getRandom = function (n, m) {
+            return Math.floor(Math.random() * (m - n) + n);
+        };
+        //把局部变量暴露给window 变为全局变量
+        window.Random = new Random();
+    })(window);
+    (function () {
+        //获取地图
+        let map = document.querySelector('.map');
+        //食物的构造函数    // 食物有宽,高，颜色     
+        function Food(width, height, color) {
+            this.width = width || 20;
+            this.height = height || 20;
+            this.color = color;
+            //   x   y  食物的坐标
+            // 默认在地图的左上角
+            this.x = 0;
+            this.y = 0;
+            this.element = document.createElement('div') //创造小方块元素
+        }
+        //初始化小方块的显示效果与位置   --- 显示在map上
+        Food.prototype.init = function (map) {
+            // this指向当前的实例对象 
+            let div = this.element;
+            //给div设置样式
+            div.style.position = 'absolute';
+            div.style.width = this.width + 'px';
+            div.style.height = this.height + 'px';
+            div.style.backgroundColor = this.color;
+            //把创建好的div生成在map里
+            map.appendChild(div);
+            this.render(map);
+        };
+        //给食物一个随机坐标的方法
+        Food.prototype.render  = function () {
+            // 800/20 = 40   x坐标最多可以放四十个  所以随机数 为 0 - 40；
+            let x = Random.getRandom(0,map.offsetWidth/this.width)*this.width;
+            let y = Random.getRandom(0,map.offsetHeight/this.height)*this.height;
+            //赋值给坐标
+            this.x = x;
+            this.y = y;
+            let div = this.element;
+            div.style.top = this.y + 'px';
+            div.style.left =this.x + 'px';
+        }
+        let fd = new Food(20,20,'red');
+        fd.init(map);
+    })();
+</script>
+
+</html>
