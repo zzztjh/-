@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    .map {
+      width: 800px;
+      height: 600px;
+      background-color: #ccc;
+      position: relative;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="map"></div>
+</body>
+<script>
+  (function () {
+    //创建一个数组用来存放小方块食物
+    let elements = [];
+    //食物有高  宽   颜色  坐标
+    function Food(x, y, width, height, color) {
+      this.x = x || 0;
+      this.y = y || 0;
+      this.width = width || 20;
+      this.height = height || 20;
+      this.color = color || 'red';
+    };
+    //食物还有行为   
+    Food.prototype.init = function (map) {
+      //每次创建开始先删除这个小食物
+      remove(); 
+
+
+      //创建div 
+      let div = document.createElement('div');
+      //把div添加到map地图中
+      map.appendChild(div);
+      //设置div样式
+      div.style.width = this.width + 'px';
+      div.style.height = this.height + 'px';
+      div.style.backgroundColor = this.color;
+      div.style.position = 'absolute';
+      //随机坐标轴
+      this.x = parseInt(Math.random() * (map.offsetWidth / this.width)) * this.width;
+      this.y = parseInt(Math.random() * (map.offsetHeight / this.height)) * this.height;
+      div.style.left = this.x + 'px';
+      div.style.top = this.y + 'px';
+      //把div加入到数组elements中
+      elements.push(div);
+    }
+    //删除食物
+    function remove() {
+      // element数组中有这个食物
+      for (let i = 0; i < elements.length; i++) {
+        let ele = elements[i];
+        //找到这个元素的父级元素，删除这个元素;
+        ele.parentNode.removeChild(ele);
+        //再次把elements中的这个子元素也要删除
+        elements.splice(i,1);   //从第  i 后面删除一个   
+      }
+    }
+    //把Food暴露给window     //变成全局
+    window.Food = Food;
+  }());
+  let fd = new Food();
+  fd.init(document.querySelector('.map'));
+</script>
+
+</html>
