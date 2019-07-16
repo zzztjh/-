@@ -73,10 +73,11 @@
   //小蛇的自调用函数
   //小蛇对象
   (function () {
-    let elements = []; // 存放小蛇的身体
+    // let elements = []; // 存放小蛇的身体
     function Snake(width, height, direction) {
       this.width = width || 20;
       this.height = height || 20;
+      this.elements=[];
       //小蛇的身体
       this.body = [{
           x: 3,
@@ -98,6 +99,11 @@
     }
     //为原型对象添加方法 -  小蛇初始化的方法
     Snake.prototype.init = function (map) {
+      this.elements.forEach(e => {
+      e.remove();
+    });
+    this.elements = [];
+      //先删除之前的小蛇
       //循环遍历创建div
       for (let i = 0; i < this.body.length; i++) {
         let obj = this.body[i];
@@ -113,7 +119,7 @@
         div.style.top = obj.y * this.height + 'px';
         div.style.backgroundColor = obj.color;
         // /把div加到element数组中   ---  为了删除
-        elements.push(div);
+        this.elements.push(div);
         //为原型添加方法 ---小蛇动起来
         Snake.prototype.move = function (food, map) {
           //改变小蛇的坐标位置
@@ -140,14 +146,58 @@
         }
       }
     };
+
+    //初始化方法
+    function remove() {
+      //获取数组b
+      let i = elements - 1;
+      for (; i >= 0; i--) {
+        //先从当前的子元素找到该子元素 然后删除子元素
+        let ele = elements[i];
+        //从map地图上删除这个子元素
+        ele.parentNode.removeChild(ele);
+        elements.splice(i, 1);
+      }
+    }
     //把Snake暴露给window
     window.Snake = Snake;
   })();
-  let fd = new Food();
-  fd.init(document.querySelector('.map'));
-  let snake = new Snake();
-  snake.init(document.querySelector('.map'));
 
+  //自调用函数 --- 游戏对象
+  (function () {
+    let _this = null;
+    //游戏的构造函数
+    function Game(map) {
+      this.food = new Food(); //食物对象
+      this.snake = new Snake();
+      this.map = map;
+      _this = this;
+    }
+    Game.prototype.init = function () {
+      //初始化游戏
+      //食物初始化
+      this.food.init(this.map);
+      //小蛇初始化
+      this.snake.init(this.map);
+
+      setInterval(function () {
+        _this.snake.move(_this.food, _this.map);
+        _this.snake.init(_this.map);
+      }, 150);
+      
+      // this.snake.move(this.food, this.map);
+      // this.snake.init(this.map);
+
+    }
+    window.Game = Game;
+  })();
+  let gm = new Game(document.querySelector(".map"));
+  gm.init();
+
+  // let fd = new Food();
+  // fd.init(document.querySelector('.map'));
+  // let snake = new Snake();
+  // snake.init(document.querySelector('.map'));
 </script>
 
 </html>
